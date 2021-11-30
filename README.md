@@ -13,8 +13,8 @@ so  write a adapter with sea-orm. it is only tested on Mysql,Postgresql. not Sql
 1.  add dependencies
 ```
 [dependencies]
-sea_orm_casbin_adapter = "0.1.1"
-tokio = "1.14.0"
+sea_orm_casbin_adapter = "*"
+tokio = "*"
 ```
 2.  add casbin model policy file
 3.  add code to your code
