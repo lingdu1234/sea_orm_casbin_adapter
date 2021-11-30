@@ -16,14 +16,14 @@ pub struct Model {
     pub v5: String,
 }
 #[derive(Debug, Default)]
-pub struct NewCasbinRule {
-    pub ptype: String,
-    pub v0: String,
-    pub v1: Option<String>,
-    pub v2: Option<String>,
-    pub v3: Option<String>,
-    pub v4: Option<String>,
-    pub v5: Option<String>,
+pub struct NewCasbinRule<'a> {
+    pub ptype: &'a str,
+    pub v0: &'a str,
+    pub v1: Option<&'a str>,
+    pub v2: Option<&'a str>,
+    pub v3: Option<&'a str>,
+    pub v4: Option<&'a str>,
+    pub v5: Option<&'a str>,
 }
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {}

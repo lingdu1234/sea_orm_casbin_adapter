@@ -13,7 +13,7 @@ pub struct SeaOrmAdapter {
 
 impl<'a> SeaOrmAdapter {
     pub async fn new<U: Into<String>>(url: U) -> Result<Self> {
-        let mut opt = ConnectOptions::new(url.into().to_owned());
+        let mut opt = ConnectOptions::new(url.into());
         opt.max_connections(100)
             .min_connections(5)
             .connect_timeout(Duration::from_secs(8))
@@ -38,41 +38,41 @@ impl<'a> SeaOrmAdapter {
         &self,
         ptype: &'a str,
         rule: &'a [String],
-    ) -> Option<NewCasbinRule> {
+    ) -> Option<NewCasbinRule<'a>> {
         if ptype.trim().is_empty() || rule.is_empty() {
             return None;
         }
 
         let mut new_rule = NewCasbinRule {
-            ptype: ptype.to_string(),
-            v0: "".to_string(),
-            v1: Some("".to_string()),
-            v2: Some("".to_string()),
-            v3: Some("".to_string()),
-            v4: Some("".to_string()),
-            v5: Some("".to_string()),
+            ptype,
+            v0: "",
+            v1: Some(""),
+            v2: Some(""),
+            v3: Some(""),
+            v4: Some(""),
+            v5: Some(""),
         };
 
-        new_rule.v0 = (&rule[0]).clone();
+        new_rule.v0 = &rule[0];
 
         if rule.len() > 1 {
-            new_rule.v1 = Some((&rule[1]).clone());
+            new_rule.v1 = Some(&rule[1]);
         }
 
         if rule.len() > 2 {
-            new_rule.v2 = Some((&rule[2]).clone());
+            new_rule.v2 = Some(&rule[2]);
         }
 
         if rule.len() > 3 {
-            new_rule.v3 = Some((&rule[3]).clone());
+            new_rule.v3 = Some(&rule[3]);
         }
 
         if rule.len() > 4 {
-            new_rule.v4 = Some((&rule[4]).clone());
+            new_rule.v4 = Some(&rule[4]);
         }
 
         if rule.len() > 5 {
-            new_rule.v5 = Some((&rule[5]).clone());
+            new_rule.v5 = Some(&rule[5]);
         }
 
         Some(new_rule)

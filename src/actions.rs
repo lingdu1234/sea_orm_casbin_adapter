@@ -185,22 +185,22 @@ pub(crate) async fn load_filtered_policy<'a>(
                 .add(
                     Condition::all()
                         .add(Column::Ptype.like("p%"))
-                        .add(Column::V0.like((g_filter[0]).clone()))
-                        .add(Column::V1.like((g_filter[1]).clone()))
-                        .add(Column::V2.like((g_filter[2]).clone()))
-                        .add(Column::V3.like((g_filter[3]).clone()))
-                        .add(Column::V4.like((g_filter[4]).clone()))
-                        .add(Column::V5.like((g_filter[5]).clone())),
+                        .add(Column::V0.like(g_filter[0]))
+                        .add(Column::V1.like(g_filter[1]))
+                        .add(Column::V2.like(g_filter[2]))
+                        .add(Column::V3.like(g_filter[3]))
+                        .add(Column::V4.like(g_filter[4]))
+                        .add(Column::V5.like(g_filter[5])),
                 )
                 .add(
                     Condition::all()
                         .add(Column::Ptype.like("g%"))
-                        .add(Column::V0.like((p_filter[0]).clone()))
-                        .add(Column::V1.like((p_filter[1]).clone()))
-                        .add(Column::V2.like((p_filter[2]).clone()))
-                        .add(Column::V3.like((p_filter[3]).clone()))
-                        .add(Column::V4.like((p_filter[4]).clone()))
-                        .add(Column::V5.like((p_filter[5]).clone())),
+                        .add(Column::V0.like(p_filter[0]))
+                        .add(Column::V1.like(p_filter[1]))
+                        .add(Column::V2.like(p_filter[2]))
+                        .add(Column::V3.like(p_filter[3]))
+                        .add(Column::V4.like(p_filter[4]))
+                        .add(Column::V5.like(p_filter[5])),
                 ),
         )
         .all(conn)
@@ -210,46 +210,46 @@ pub(crate) async fn load_filtered_policy<'a>(
 }
 
 ///  保存策略
-pub async fn save_policy(conn: &DatabaseConnection, rules: Vec<NewCasbinRule>) -> Result<()> {
-    let mut txn = conn
+pub async fn save_policy(conn: &DatabaseConnection, rules: Vec<NewCasbinRule<'_>>) -> Result<()> {
+    let txn = conn
         .begin()
         .await
         .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
     for rule in rules {
-        let v1 = rule.v1.clone().unwrap_or("".to_string());
-        let v2 = rule.v2.clone().unwrap_or("".to_string());
-        let v3 = rule.v3.clone().unwrap_or("".to_string());
-        let v4 = rule.v4.clone().unwrap_or("".to_string());
-        let v5 = rule.v5.clone().unwrap_or("".to_string());
+        let v1 = rule.v1.unwrap_or("");
+        let v2 = rule.v2.unwrap_or("");
+        let v3 = rule.v3.unwrap_or("");
+        let v4 = rule.v4.unwrap_or("");
+        let v5 = rule.v5.unwrap_or("");
         let s = Entity::find()
-            .filter(Column::Ptype.eq(rule.ptype.clone()))
-            .filter(Column::V0.eq(rule.v0.clone()))
-            .filter(Column::V1.eq(v1.clone()))
-            .filter(Column::V2.eq(v2.clone()))
-            .filter(Column::V3.eq(v3.clone()))
-            .filter(Column::V4.eq(v4.clone()))
-            .filter(Column::V5.eq(v5.clone()))
+            .filter(Column::Ptype.eq(rule.ptype))
+            .filter(Column::V0.eq(rule.v0))
+            .filter(Column::V1.eq(v1))
+            .filter(Column::V2.eq(v2))
+            .filter(Column::V3.eq(v3))
+            .filter(Column::V4.eq(v4))
+            .filter(Column::V5.eq(v5))
             .all(&txn)
             .await
             .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
 
-        if s.len() >= 1 {
+        if !s.is_empty() {
             continue;
         }
 
         // let uid = scru128::scru128();
         let p = ActiveModel {
             id: Unset(None),
-            ptype: Set(rule.ptype),
-            v0: Set(rule.v0),
-            v1: Set(rule.v1.unwrap_or("".to_string())),
-            v2: Set(rule.v2.unwrap_or("".to_string())),
-            v3: Set(rule.v3.unwrap_or("".to_string())),
-            v4: Set(rule.v4.unwrap_or("".to_string())),
-            v5: Set(rule.v5.unwrap_or("".to_string())),
+            ptype: Set(rule.ptype.to_string()),
+            v0: Set(rule.v0.to_string()),
+            v1: Set(rule.v1.unwrap_or("").to_string()),
+            v2: Set(rule.v2.unwrap_or("").to_string()),
+            v3: Set(rule.v3.unwrap_or("").to_string()),
+            v4: Set(rule.v4.unwrap_or("").to_string()),
+            v5: Set(rule.v5.unwrap_or("").to_string()),
         };
 
-        p.insert(&mut txn)
+        p.insert(&txn)
             .await
             .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
     }
@@ -261,38 +261,38 @@ pub async fn save_policy(conn: &DatabaseConnection, rules: Vec<NewCasbinRule>) -
 }
 
 ///  添加策略
-pub(crate) async fn add_policy(conn: &DatabaseConnection, rule: NewCasbinRule) -> Result<bool> {
-    let v1 = rule.v1.clone().unwrap_or("".to_string());
-    let v2 = rule.v2.clone().unwrap_or("".to_string());
-    let v3 = rule.v3.clone().unwrap_or("".to_string());
-    let v4 = rule.v4.clone().unwrap_or("".to_string());
-    let v5 = rule.v5.clone().unwrap_or("".to_string());
+pub(crate) async fn add_policy(conn: &DatabaseConnection, rule: NewCasbinRule<'_>) -> Result<bool> {
+    let v1 = rule.v1.unwrap_or("");
+    let v2 = rule.v2.unwrap_or("");
+    let v3 = rule.v3.unwrap_or("");
+    let v4 = rule.v4.unwrap_or("");
+    let v5 = rule.v5.unwrap_or("");
     // 先查询
     let s = Entity::find()
-        .filter(Column::Ptype.eq(rule.ptype.clone()))
-        .filter(Column::V0.eq(rule.v0.clone()))
-        .filter(Column::V1.eq(v1.clone()))
-        .filter(Column::V2.eq(v2.clone()))
-        .filter(Column::V3.eq(v3.clone()))
-        .filter(Column::V4.eq(v4.clone()))
-        .filter(Column::V5.eq(v5.clone()))
+        .filter(Column::Ptype.eq(rule.ptype))
+        .filter(Column::V0.eq(rule.v0))
+        .filter(Column::V1.eq(v1))
+        .filter(Column::V2.eq(v2))
+        .filter(Column::V3.eq(v3))
+        .filter(Column::V4.eq(v4))
+        .filter(Column::V5.eq(v5))
         .all(conn)
         .await
         .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
     //  确认下是否存在  在添加
-    if s.len() >= 1 {
+    if !s.is_empty() {
         return Ok(false);
     }
     // let uid = scru128::scru128();
     let p = ActiveModel {
         id: Unset(None),
-        ptype: Set(rule.ptype),
-        v0: Set(rule.v0),
-        v1: Set(v1.clone()),
-        v2: Set(v2.clone()),
-        v3: Set(v3.clone()),
-        v4: Set(v4.clone()),
-        v5: Set(v5.clone()),
+        ptype: Set(rule.ptype.to_string()),
+        v0: Set(rule.v0.to_string()),
+        v1: Set(v1.to_string()),
+        v2: Set(v2.to_string()),
+        v3: Set(v3.to_string()),
+        v4: Set(v4.to_string()),
+        v5: Set(v5.to_string()),
     };
 
     p.insert(conn)
@@ -304,45 +304,44 @@ pub(crate) async fn add_policy(conn: &DatabaseConnection, rule: NewCasbinRule) -
 ///  添加多个策略
 pub(crate) async fn add_policies(
     conn: &DatabaseConnection,
-    rules: Vec<NewCasbinRule>,
+    rules: Vec<NewCasbinRule<'_>>,
 ) -> Result<bool> {
     let txn = conn
         .begin()
         .await
         .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
     for rule in rules {
-        // let uid = scru128::scru128();
-        let v1 = rule.v1.clone().unwrap_or("".to_string());
-        let v2 = rule.v2.clone().unwrap_or("".to_string());
-        let v3 = rule.v3.clone().unwrap_or("".to_string());
-        let v4 = rule.v4.clone().unwrap_or("".to_string());
-        let v5 = rule.v5.clone().unwrap_or("".to_string());
+        let v1 = rule.v1.unwrap_or("");
+        let v2 = rule.v2.unwrap_or("");
+        let v3 = rule.v3.unwrap_or("");
+        let v4 = rule.v4.unwrap_or("");
+        let v5 = rule.v5.unwrap_or("");
         // 先查询
         let s = Entity::find()
-            .filter(Column::Ptype.eq(rule.ptype.clone()))
-            .filter(Column::V0.eq(rule.v0.clone()))
-            .filter(Column::V1.eq(v1.clone()))
-            .filter(Column::V2.eq(v2.clone()))
-            .filter(Column::V3.eq(v3.clone()))
-            .filter(Column::V4.eq(v4.clone()))
-            .filter(Column::V5.eq(v5.clone()))
+            .filter(Column::Ptype.eq(rule.ptype))
+            .filter(Column::V0.eq(rule.v0))
+            .filter(Column::V1.eq(v1))
+            .filter(Column::V2.eq(v2))
+            .filter(Column::V3.eq(v3))
+            .filter(Column::V4.eq(v4))
+            .filter(Column::V5.eq(v5))
             .all(&txn)
             .await
             .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
         //  确认下是否存在  在添加
-        if s.len() >= 1 {
+        if !s.is_empty() {
             continue;
         }
         // let uid = scru128::scru128();
         let p = ActiveModel {
             id: Unset(None),
-            ptype: Set(rule.ptype),
-            v0: Set(rule.v0),
-            v1: Set(v1.clone()),
-            v2: Set(v2.clone()),
-            v3: Set(v3.clone()),
-            v4: Set(v4.clone()),
-            v5: Set(v5.clone()),
+            ptype: Set(rule.ptype.to_string()),
+            v0: Set(rule.v0.to_string()),
+            v1: Set(v1.to_string()),
+            v2: Set(v2.to_string()),
+            v3: Set(v3.to_string()),
+            v4: Set(v4.to_string()),
+            v5: Set(v5.to_string()),
         };
 
         p.insert(&txn)
@@ -356,12 +355,12 @@ pub(crate) async fn add_policies(
 }
 ///  清除策略
 pub(crate) async fn clear_policy(conn: &DatabaseConnection) -> Result<()> {
-    let mut txn = conn
+    let txn = conn
         .begin()
         .await
         .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
     Entity::delete_many()
-        .exec(&mut txn)
+        .exec(&txn)
         .await
         .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
     txn.commit()
