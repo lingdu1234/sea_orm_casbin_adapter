@@ -1,11 +1,11 @@
-use std::time::Duration;
-
 use super::actions as adapter;
 use super::models::Model as CasbinRule;
 use super::models::*;
+use super::Error;
 use async_trait::async_trait;
-use casbin::{Adapter, Filter, Model, Result};
+use casbin::{error::AdapterError, Adapter, Error as CasbinError, Filter, Model, Result};
 use sea_orm::{ConnectOptions, Database, DatabaseConnection};
+use std::time::Duration;
 pub struct SeaOrmAdapter {
     pool: DatabaseConnection,
     is_filtered: bool,
@@ -18,7 +18,16 @@ impl<'a> SeaOrmAdapter {
             .min_connections(5)
             .connect_timeout(Duration::from_secs(8))
             .idle_timeout(Duration::from_secs(8));
-        let pool = Database::connect(opt).await.expect("数据库打开失败");
+        let pool = Database::connect(opt)
+            .await
+            .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+        adapter::new(&pool).await.map(|_| Self {
+            pool,
+            is_filtered: false,
+        })
+    }
+
+    pub async fn new_with_pool(pool: DatabaseConnection) -> Result<Self> {
         adapter::new(&pool).await.map(|_| Self {
             pool,
             is_filtered: false,

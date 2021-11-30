@@ -96,3 +96,15 @@ async fn main() -> Result<()> {
 
    ```
 
+   支持直接传入数据库连接
+   ```rust
+   let m = DefaultModel::from_file("config/casbin_conf/rbac_model.conf")
+        .await
+        .unwrap();
+    let pool: DatabaseConnection = Database::connect("protocol://username:password@host/database").await?;
+    let adpt = SeaOrmAdapter::new_with_pool(pool).await.unwrap();
+    let mut e = Enforcer::new(m, adpt).await?;
+    e.enforce(("data2_admin", "data2", "write"))?;
+
+   ```
+
