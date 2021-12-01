@@ -1,6 +1,6 @@
 [package]
 authors = ["lingdu <waong2005@126.com>"]
-categories = ["adapter", "casbin adapter", "sea_orm"]
+categories = ["database"]
 description = "❤ casbin adapter for rust with sea_orm"
 documentation = "https://docs.rs/sea_orm_casbin_adapter"
 edition = "2021"

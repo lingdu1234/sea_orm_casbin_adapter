@@ -6,12 +6,11 @@
 
 
 # ...
-because of the sqx casbin adapter is not work correctly,  
-so  write a adapter with sea-orm. it is only tested on Mysql,Postgresql. not Sqlite3,may be work.
+a adapter with sea-orm. it is only tested on Mysql,Postgresql. not Sqlite3,may be work.
 
 ## usage<使用方法>
 1.  add dependencies
-```
+```toml
 [dependencies]
 sea_orm_casbin_adapter = "*"
 tokio = "*"
