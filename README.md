@@ -4,6 +4,9 @@
 > sea-orm-casbin-adapter is a casbin adapter for sea-orm.  
 > just like sqx-adapter, it can be used in sea-orm.
 
+## test
+
+[testcase/测试例子](https://github.com/lingdu1234/sea_orm_casbin_adapter/blob/main/tests/test.md)
 
 # ...
 a adapter with sea-orm. it is only tested on Mysql,Postgresql. not Sqlite3,may be work.
