@@ -223,9 +223,9 @@ impl Adapter for SeaOrmAdapter {
         field_values: Vec<String>,
     ) -> Result<bool> {
         if field_index <= 5 && !field_values.is_empty() && field_values.len() >= 6 - field_index {
-            adapter::remove_filtered_policy(&self.pool, pt, field_index, field_values).await
-        } else {
             Ok(false)
+        } else {
+            adapter::remove_filtered_policy(&self.pool, pt, field_index, field_values).await
         }
     }
 

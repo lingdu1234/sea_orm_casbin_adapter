@@ -1512,7 +1512,7 @@ dependencies = [
 
 [[package]]
 name = "sea_orm_casbin_adapter"
-version = "0.1.5"
+version = "0.1.7"
 dependencies = [
  "async-trait",
  "casbin",

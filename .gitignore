@@ -4,5 +4,4 @@
 *.http
 .git
 .vscode
-/config
 /src/main.rs~~
