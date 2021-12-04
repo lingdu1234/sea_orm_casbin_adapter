@@ -1,10 +1,10 @@
 use super::models::{ActiveModel, Column, Entity, Model, NewCasbinRule};
 use super::Error;
 use casbin::{error::AdapterError, Error as CasbinError, Filter, Result};
-use sea_orm::sea_query::{self, ColumnDef, Condition};
+use sea_orm::sea_query::{self, ColumnDef, Condition, Expr, Query};
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, ConnectionTrait, DatabaseConnection, EntityTrait, ExecResult,
-    QueryFilter, Set, Unset,
+    ActiveModelTrait, ColumnTrait, ConnectionTrait, DatabaseConnection, EntityName, EntityTrait,
+    ExecResult, QueryFilter, Set, Unset,
 };
 pub async fn new(conn: &DatabaseConnection) -> Result<ExecResult> {
     let stmt = sea_query::Table::create()
@@ -77,6 +77,273 @@ pub async fn remove_policies(
 }
 
 ///  删除筛选的策略
+// pub async fn remove_filtered_policy(
+//     conn: &DatabaseConnection,
+//     pt: &str,
+//     field_index: usize,
+//     field_values: Vec<String>,
+// ) -> Result<bool> {
+//     let field_values_x = normalize_casbin_rule(field_values, field_index);
+//     // let for_delete =
+//     if field_index == 5 {
+//         Entity::delete_many()
+//             .filter(
+//                 Condition::all()
+//                     .add(Column::Ptype.eq(pt))
+//                     .add_option(Some(Column::V5.eq((field_values_x[0]).clone()))),
+//             )
+//             .exec(conn)
+//             .await
+//             .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//     } else if field_index == 4 {
+//         if !field_values_x[1].is_empty() {
+//             Entity::delete_many()
+//                 .filter(
+//                     Condition::all()
+//                         .add(Column::Ptype.eq(pt))
+//                         .add(Column::V4.eq((field_values_x[0]).clone()))
+//                         .add(Column::V5.eq((field_values_x[1]).clone())),
+//                 )
+//                 .exec(conn)
+//                 .await
+//                 .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//         } else {
+//             Entity::delete_many()
+//                 .filter(
+//                     Condition::all()
+//                         .add(Column::Ptype.eq(pt))
+//                         .add(Column::V4.eq((field_values_x[0]).clone())),
+//                 )
+//                 .exec(conn)
+//                 .await
+//                 .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//         }
+//     } else if field_index == 3 {
+//         if !field_values_x[2].is_empty() {
+//             Entity::delete_many()
+//                 .filter(
+//                     Condition::all()
+//                         .add(Column::Ptype.eq(pt))
+//                         .add(Column::V3.eq((field_values_x[0]).clone()))
+//                         .add(Column::V4.eq((field_values_x[1]).clone()))
+//                         .add(Column::V5.eq((field_values_x[2]).clone())),
+//                 )
+//                 .exec(conn)
+//                 .await
+//                 .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//         } else if !field_values_x[1].is_empty() {
+//             Entity::delete_many()
+//                 .filter(
+//                     Condition::all()
+//                         .add(Column::Ptype.eq(pt))
+//                         .add(Column::V3.eq((field_values_x[0]).clone()))
+//                         .add(Column::V4.eq((field_values_x[1]).clone())),
+//                 )
+//                 .exec(conn)
+//                 .await
+//                 .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//         } else {
+//             Entity::delete_many()
+//                 .filter(
+//                     Condition::all()
+//                         .add(Column::Ptype.eq(pt))
+//                         .add(Column::V3.eq((field_values_x[0]).clone())),
+//                 )
+//                 .exec(conn)
+//                 .await
+//                 .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//         }
+//     } else if field_index == 2 {
+//         if !field_values_x[3].is_empty() {
+//             Entity::delete_many()
+//                 .filter(
+//                     Condition::all()
+//                         .add(Column::Ptype.eq(pt))
+//                         .add(Column::V2.eq((field_values_x[0]).clone()))
+//                         .add(Column::V3.eq((field_values_x[1]).clone()))
+//                         .add(Column::V4.eq((field_values_x[2]).clone()))
+//                         .add(Column::V5.eq((field_values_x[3]).clone())),
+//                 )
+//                 .exec(conn)
+//                 .await
+//                 .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//         } else if !field_values_x[2].is_empty() {
+//             Entity::delete_many()
+//                 .filter(
+//                     Condition::all()
+//                         .add(Column::Ptype.eq(pt))
+//                         .add(Column::V2.eq((field_values_x[0]).clone()))
+//                         .add(Column::V3.eq((field_values_x[1]).clone()))
+//                         .add(Column::V4.eq((field_values_x[2]).clone())),
+//                 )
+//                 .exec(conn)
+//                 .await
+//                 .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//         } else if !field_values_x[1].is_empty() {
+//             Entity::delete_many()
+//                 .filter(
+//                     Condition::all()
+//                         .add(Column::Ptype.eq(pt))
+//                         .add(Column::V2.eq((field_values_x[0]).clone()))
+//                         .add(Column::V3.eq((field_values_x[1]).clone())),
+//                 )
+//                 .exec(conn)
+//                 .await
+//                 .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//         } else {
+//             Entity::delete_many()
+//                 .filter(
+//                     Condition::all()
+//                         .add(Column::Ptype.eq(pt))
+//                         .add(Column::V2.eq((field_values_x[0]).clone())),
+//                 )
+//                 .exec(conn)
+//                 .await
+//                 .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//         }
+//     } else if field_index == 1 {
+//         if !field_values_x[4].is_empty() {
+//             Entity::delete_many()
+//                 .filter(
+//                     Condition::all()
+//                         .add(Column::Ptype.eq(pt))
+//                         .add(Column::V1.eq(field_values_x[0].clone()))
+//                         .add(Column::V2.eq(field_values_x[1].clone()))
+//                         .add(Column::V3.eq(field_values_x[2].clone()))
+//                         .add(Column::V4.eq(field_values_x[3].clone()))
+//                         .add(Column::V5.eq(field_values_x[4].clone())),
+//                 )
+//                 .exec(conn)
+//                 .await
+//                 .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//         } else if !field_values_x[3].is_empty() {
+//             Entity::delete_many()
+//                 .filter(
+//                     Condition::all()
+//                         .add(Column::Ptype.eq(pt))
+//                         .add(Column::V1.eq(field_values_x[0].clone()))
+//                         .add(Column::V2.eq(field_values_x[1].clone()))
+//                         .add(Column::V3.eq(field_values_x[2].clone()))
+//                         .add(Column::V4.eq(field_values_x[3].clone())),
+//                 )
+//                 .exec(conn)
+//                 .await
+//                 .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//         } else if !field_values_x[2].is_empty() {
+//             Entity::delete_many()
+//                 .filter(
+//                     Condition::all()
+//                         .add(Column::Ptype.eq(pt))
+//                         .add(Column::V1.eq(field_values_x[0].clone()))
+//                         .add(Column::V2.eq(field_values_x[1].clone()))
+//                         .add(Column::V3.eq(field_values_x[2].clone())),
+//                 )
+//                 .exec(conn)
+//                 .await
+//                 .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//         } else if !field_values_x[1].is_empty() {
+//             Entity::delete_many()
+//                 .filter(
+//                     Condition::all()
+//                         .add(Column::Ptype.eq(pt))
+//                         .add(Column::V1.eq(field_values_x[0].clone()))
+//                         .add(Column::V2.eq(field_values_x[1].clone())),
+//                 )
+//                 .exec(conn)
+//                 .await
+//                 .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//         } else {
+//             Entity::delete_many()
+//                 .filter(
+//                     Condition::all()
+//                         .add(Column::Ptype.eq(pt))
+//                         .add(Column::V1.eq(field_values_x[0].clone())),
+//                 )
+//                 .exec(conn)
+//                 .await
+//                 .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//         }
+//     } else if !field_values_x[5].is_empty() {
+//         Entity::delete_many()
+//             .filter(
+//                 Condition::all()
+//                     .add(Column::Ptype.eq(pt))
+//                     .add(Column::V0.eq(field_values_x[0].clone()))
+//                     .add(Column::V1.eq(field_values_x[1].clone()))
+//                     .add(Column::V2.eq(field_values_x[2].clone()))
+//                     .add(Column::V3.eq(field_values_x[3].clone()))
+//                     .add(Column::V4.eq(field_values_x[4].clone()))
+//                     .add(Column::V5.eq(field_values_x[5].clone())),
+//             )
+//             .exec(conn)
+//             .await
+//             .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//     } else if !field_values_x[4].is_empty() {
+//         Entity::delete_many()
+//             .filter(
+//                 Condition::all()
+//                     .add(Column::Ptype.eq(pt))
+//                     .add(Column::V0.eq(field_values_x[0].clone()))
+//                     .add(Column::V1.eq(field_values_x[1].clone()))
+//                     .add(Column::V2.eq(field_values_x[2].clone()))
+//                     .add(Column::V3.eq(field_values_x[3].clone()))
+//                     .add(Column::V4.eq(field_values_x[4].clone())),
+//             )
+//             .exec(conn)
+//             .await
+//             .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//     } else if !field_values_x[3].is_empty() {
+//         Entity::delete_many()
+//             .filter(
+//                 Condition::all()
+//                     .add(Column::Ptype.eq(pt))
+//                     .add(Column::V0.eq(field_values_x[0].clone()))
+//                     .add(Column::V1.eq(field_values_x[1].clone()))
+//                     .add(Column::V2.eq(field_values_x[2].clone()))
+//                     .add(Column::V3.eq(field_values_x[3].clone())),
+//             )
+//             .exec(conn)
+//             .await
+//             .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//     } else if !field_values_x[2].is_empty() {
+//         Entity::delete_many()
+//             .filter(
+//                 Condition::all()
+//                     .add(Column::Ptype.eq(pt))
+//                     .add(Column::V0.eq(field_values_x[0].clone()))
+//                     .add(Column::V1.eq(field_values_x[1].clone()))
+//                     .add(Column::V2.eq(field_values_x[2].clone())),
+//             )
+//             .exec(conn)
+//             .await
+//             .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//     } else if !field_values_x[1].is_empty() {
+//         Entity::delete_many()
+//             .filter(
+//                 Condition::all()
+//                     .add(Column::Ptype.eq(pt))
+//                     .add(Column::V0.eq(field_values_x[0].clone()))
+//                     .add(Column::V1.eq(field_values_x[1].clone())),
+//             )
+//             .exec(conn)
+//             .await
+//             .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//     } else {
+//         Entity::delete_many()
+//             .filter(
+//                 Condition::all()
+//                     .add(Column::Ptype.eq(pt))
+//                     .add(Column::V0.eq(field_values_x[0].clone())),
+//             )
+//             .exec(conn)
+//             .await
+//             .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//     };
+
+//     Ok(true)
+// }
+
+///  删除筛选的策略
 pub async fn remove_filtered_policy(
     conn: &DatabaseConnection,
     pt: &str,
@@ -84,264 +351,219 @@ pub async fn remove_filtered_policy(
     field_values: Vec<String>,
 ) -> Result<bool> {
     let field_values_x = normalize_casbin_rule(field_values, field_index);
-    // let for_delete =
+    let mut d = Query::delete()
+        .from_table(Entity.table_ref())
+        .and_where(Expr::col(Column::Ptype).eq(pt))
+        .clone();
+    let builder = conn.get_database_backend();
     if field_index == 5 {
-        Entity::delete_many()
-            .filter(
-                Condition::all()
-                    .add(Column::Ptype.eq(pt))
-                    .add_option(Some(Column::V5.eq((field_values_x[0]).clone()))),
-            )
-            .exec(conn)
-            .await
-            .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+        if !field_values_x[4].is_empty() {
+            d = d
+                .and_where(Expr::col(Column::V5).eq(field_values_x[0].clone()))
+                .clone();
+        }
     } else if field_index == 4 {
-        if !field_values_x[1].is_empty() {
-            Entity::delete_many()
-                .filter(
-                    Condition::all()
-                        .add(Column::Ptype.eq(pt))
-                        .add(Column::V4.eq((field_values_x[0]).clone()))
-                        .add(Column::V5.eq((field_values_x[1]).clone())),
-                )
-                .exec(conn)
-                .await
-                .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
-        } else {
-            Entity::delete_many()
-                .filter(
-                    Condition::all()
-                        .add(Column::Ptype.eq(pt))
-                        .add(Column::V4.eq((field_values_x[0]).clone())),
-                )
-                .exec(conn)
-                .await
-                .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+        if !field_values_x[3].is_empty() {
+            d = d
+                .and_where(Expr::col(Column::V4).eq(field_values_x[0].clone()))
+                .clone();
+        }
+        if !field_values_x[4].is_empty() {
+            d = d
+                .and_where(Expr::col(Column::V5).eq(field_values_x[1].clone()))
+                .clone();
         }
     } else if field_index == 3 {
         if !field_values_x[2].is_empty() {
-            Entity::delete_many()
-                .filter(
-                    Condition::all()
-                        .add(Column::Ptype.eq(pt))
-                        .add(Column::V3.eq((field_values_x[0]).clone()))
-                        .add(Column::V4.eq((field_values_x[1]).clone()))
-                        .add(Column::V5.eq((field_values_x[2]).clone())),
-                )
-                .exec(conn)
-                .await
-                .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
-        } else if !field_values_x[1].is_empty() {
-            Entity::delete_many()
-                .filter(
-                    Condition::all()
-                        .add(Column::Ptype.eq(pt))
-                        .add(Column::V3.eq((field_values_x[0]).clone()))
-                        .add(Column::V4.eq((field_values_x[1]).clone())),
-                )
-                .exec(conn)
-                .await
-                .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
-        } else {
-            Entity::delete_many()
-                .filter(
-                    Condition::all()
-                        .add(Column::Ptype.eq(pt))
-                        .add(Column::V3.eq((field_values_x[0]).clone())),
-                )
-                .exec(conn)
-                .await
-                .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+            d = d
+                .and_where(Expr::col(Column::V3).eq(field_values_x[0].clone()))
+                .clone();
+        }
+        if !field_values_x[3].is_empty() {
+            d = d
+                .and_where(Expr::col(Column::V4).eq(field_values_x[1].clone()))
+                .clone();
+        }
+        if !field_values_x[4].is_empty() {
+            d = d
+                .and_where(Expr::col(Column::V5).eq(field_values_x[2].clone()))
+                .clone();
         }
     } else if field_index == 2 {
+        if !field_values_x[1].is_empty() {
+            d = d
+                .and_where(Expr::col(Column::V2).eq(field_values_x[0].clone()))
+                .clone();
+        }
+        if !field_values_x[2].is_empty() {
+            d = d
+                .and_where(Expr::col(Column::V3).eq(field_values_x[1].clone()))
+                .clone();
+        }
         if !field_values_x[3].is_empty() {
-            Entity::delete_many()
-                .filter(
-                    Condition::all()
-                        .add(Column::Ptype.eq(pt))
-                        .add(Column::V2.eq((field_values_x[0]).clone()))
-                        .add(Column::V3.eq((field_values_x[1]).clone()))
-                        .add(Column::V4.eq((field_values_x[2]).clone()))
-                        .add(Column::V5.eq((field_values_x[3]).clone())),
-                )
-                .exec(conn)
-                .await
-                .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
-        } else if !field_values_x[2].is_empty() {
-            Entity::delete_many()
-                .filter(
-                    Condition::all()
-                        .add(Column::Ptype.eq(pt))
-                        .add(Column::V2.eq((field_values_x[0]).clone()))
-                        .add(Column::V3.eq((field_values_x[1]).clone()))
-                        .add(Column::V4.eq((field_values_x[2]).clone())),
-                )
-                .exec(conn)
-                .await
-                .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
-        } else if !field_values_x[1].is_empty() {
-            Entity::delete_many()
-                .filter(
-                    Condition::all()
-                        .add(Column::Ptype.eq(pt))
-                        .add(Column::V2.eq((field_values_x[0]).clone()))
-                        .add(Column::V3.eq((field_values_x[1]).clone())),
-                )
-                .exec(conn)
-                .await
-                .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
-        } else {
-            Entity::delete_many()
-                .filter(
-                    Condition::all()
-                        .add(Column::Ptype.eq(pt))
-                        .add(Column::V2.eq((field_values_x[0]).clone())),
-                )
-                .exec(conn)
-                .await
-                .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+            d = d
+                .and_where(Expr::col(Column::V4).eq(field_values_x[2].clone()))
+                .clone();
+        }
+        if !field_values_x[4].is_empty() {
+            d = d
+                .and_where(Expr::col(Column::V5).eq(field_values_x[3].clone()))
+                .clone();
         }
     } else if field_index == 1 {
-        if !field_values_x[4].is_empty() {
-            Entity::delete_many()
-                .filter(
-                    Condition::all()
-                        .add(Column::Ptype.eq(pt))
-                        .add(Column::V1.eq(field_values_x[0].clone()))
-                        .add(Column::V2.eq(field_values_x[1].clone()))
-                        .add(Column::V3.eq(field_values_x[2].clone()))
-                        .add(Column::V4.eq(field_values_x[3].clone()))
-                        .add(Column::V5.eq(field_values_x[4].clone())),
-                )
-                .exec(conn)
-                .await
-                .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
-        } else if !field_values_x[3].is_empty() {
-            Entity::delete_many()
-                .filter(
-                    Condition::all()
-                        .add(Column::Ptype.eq(pt))
-                        .add(Column::V1.eq(field_values_x[0].clone()))
-                        .add(Column::V2.eq(field_values_x[1].clone()))
-                        .add(Column::V3.eq(field_values_x[2].clone()))
-                        .add(Column::V4.eq(field_values_x[3].clone())),
-                )
-                .exec(conn)
-                .await
-                .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
-        } else if !field_values_x[2].is_empty() {
-            Entity::delete_many()
-                .filter(
-                    Condition::all()
-                        .add(Column::Ptype.eq(pt))
-                        .add(Column::V1.eq(field_values_x[0].clone()))
-                        .add(Column::V2.eq(field_values_x[1].clone()))
-                        .add(Column::V3.eq(field_values_x[2].clone())),
-                )
-                .exec(conn)
-                .await
-                .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
-        } else if !field_values_x[1].is_empty() {
-            Entity::delete_many()
-                .filter(
-                    Condition::all()
-                        .add(Column::Ptype.eq(pt))
-                        .add(Column::V1.eq(field_values_x[0].clone()))
-                        .add(Column::V2.eq(field_values_x[1].clone())),
-                )
-                .exec(conn)
-                .await
-                .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
-        } else {
-            Entity::delete_many()
-                .filter(
-                    Condition::all()
-                        .add(Column::Ptype.eq(pt))
-                        .add(Column::V1.eq(field_values_x[0].clone())),
-                )
-                .exec(conn)
-                .await
-                .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+        if !field_values_x[1].is_empty() {
+            d = d
+                .and_where(Expr::col(Column::V1).eq(field_values_x[0].clone()))
+                .clone();
         }
-    } else if !field_values_x[5].is_empty() {
-        Entity::delete_many()
-            .filter(
-                Condition::all()
-                    .add(Column::Ptype.eq(pt))
-                    .add(Column::V0.eq(field_values_x[0].clone()))
-                    .add(Column::V1.eq(field_values_x[1].clone()))
-                    .add(Column::V2.eq(field_values_x[2].clone()))
-                    .add(Column::V3.eq(field_values_x[3].clone()))
-                    .add(Column::V4.eq(field_values_x[4].clone()))
-                    .add(Column::V5.eq(field_values_x[5].clone())),
-            )
-            .exec(conn)
-            .await
-            .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
-    } else if !field_values_x[4].is_empty() {
-        Entity::delete_many()
-            .filter(
-                Condition::all()
-                    .add(Column::Ptype.eq(pt))
-                    .add(Column::V0.eq(field_values_x[0].clone()))
-                    .add(Column::V1.eq(field_values_x[1].clone()))
-                    .add(Column::V2.eq(field_values_x[2].clone()))
-                    .add(Column::V3.eq(field_values_x[3].clone()))
-                    .add(Column::V4.eq(field_values_x[4].clone())),
-            )
-            .exec(conn)
-            .await
-            .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
-    } else if !field_values_x[3].is_empty() {
-        Entity::delete_many()
-            .filter(
-                Condition::all()
-                    .add(Column::Ptype.eq(pt))
-                    .add(Column::V0.eq(field_values_x[0].clone()))
-                    .add(Column::V1.eq(field_values_x[1].clone()))
-                    .add(Column::V2.eq(field_values_x[2].clone()))
-                    .add(Column::V3.eq(field_values_x[3].clone())),
-            )
-            .exec(conn)
-            .await
-            .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
-    } else if !field_values_x[2].is_empty() {
-        Entity::delete_many()
-            .filter(
-                Condition::all()
-                    .add(Column::Ptype.eq(pt))
-                    .add(Column::V0.eq(field_values_x[0].clone()))
-                    .add(Column::V1.eq(field_values_x[1].clone()))
-                    .add(Column::V2.eq(field_values_x[2].clone())),
-            )
-            .exec(conn)
-            .await
-            .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
-    } else if !field_values_x[1].is_empty() {
-        Entity::delete_many()
-            .filter(
-                Condition::all()
-                    .add(Column::Ptype.eq(pt))
-                    .add(Column::V0.eq(field_values_x[0].clone()))
-                    .add(Column::V1.eq(field_values_x[1].clone())),
-            )
-            .exec(conn)
-            .await
-            .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+        if !field_values_x[2].is_empty() {
+            d = d
+                .and_where(Expr::col(Column::V2).eq(field_values_x[1].clone()))
+                .clone();
+        }
+        if !field_values_x[3].is_empty() {
+            d = d
+                .and_where(Expr::col(Column::V3).eq(field_values_x[2].clone()))
+                .clone();
+        }
+        if !field_values_x[4].is_empty() {
+            d = d
+                .and_where(Expr::col(Column::V4).eq(field_values_x[3].clone()))
+                .clone();
+        }
+        if !field_values_x[5].is_empty() {
+            d = d
+                .and_where(Expr::col(Column::V5).eq(field_values_x[4].clone()))
+                .clone();
+        }
     } else {
-        Entity::delete_many()
-            .filter(
-                Condition::all()
-                    .add(Column::Ptype.eq(pt))
-                    .add(Column::V0.eq(field_values_x[0].clone())),
-            )
-            .exec(conn)
-            .await
-            .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+        if !field_values_x[0].is_empty() {
+            d = d
+                .and_where(Expr::col(Column::V0).eq(field_values_x[0].clone()))
+                .clone();
+        }
+        if !field_values_x[1].is_empty() {
+            d = d
+                .and_where(Expr::col(Column::V1).eq(field_values_x[1].clone()))
+                .clone();
+        }
+        if !field_values_x[2].is_empty() {
+            d = d
+                .and_where(Expr::col(Column::V2).eq(field_values_x[2].clone()))
+                .clone();
+        }
+        if !field_values_x[3].is_empty() {
+            d = d
+                .and_where(Expr::col(Column::V3).eq(field_values_x[3].clone()))
+                .clone();
+        }
+        if !field_values_x[4].is_empty() {
+            d = d
+                .and_where(Expr::col(Column::V4).eq(field_values_x[4].clone()))
+                .clone();
+        }
+        if !field_values_x[5].is_empty() {
+            d = d
+                .and_where(Expr::col(Column::V5).eq(field_values_x[5].clone()))
+                .clone();
+        }
     };
+    //  执行删除
+    conn.execute(builder.build(&d))
+        .await
+        .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
 
     Ok(true)
 }
+
+///  删除筛选的策略 可以用 但是一定要用唯一Id 而且没有相似性
+// pub async fn remove_filtered_policy(
+//     conn: &DatabaseConnection,
+//     pt: &str,
+//     field_index: usize,
+//     field_values: Vec<String>,
+// ) -> Result<bool> {
+//     let field_values = normalize_casbin_rule(field_values, field_index);
+//     println!("field_values: {:?}", field_values);
+//     // let for_delete =
+//     if field_index == 5 {
+//         Entity::delete_many()
+//             .filter(
+//                 Condition::all()
+//                     .add(Column::Ptype.eq(pt))
+//                     .add(Column::V5.contains(&field_values[0])),
+//             )
+//             .exec(conn)
+//             .await
+//             .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//     } else if field_index == 4 {
+//         Entity::delete_many()
+//             .filter(
+//                 Condition::all()
+//                     .add(Column::Ptype.eq(pt))
+//                     .add(Column::V4.contains(&(field_values[0])))
+//                     .add(Column::V5.contains(&(field_values[1]))),
+//             )
+//             .exec(conn)
+//             .await
+//             .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//     } else if field_index == 3 {
+//         Entity::delete_many()
+//             .filter(
+//                 Condition::all()
+//                     .add(Column::Ptype.eq(pt))
+//                     .add(Column::V3.contains(&(field_values[0])))
+//                     .add(Column::V4.contains(&(field_values[1])))
+//                     .add(Column::V5.contains(&(field_values[2]))),
+//             )
+//             .exec(conn)
+//             .await
+//             .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//     } else if field_index == 2 {
+//         Entity::delete_many()
+//             .filter(
+//                 Condition::all()
+//                     .add(Column::Ptype.eq(pt))
+//                     .add(Column::V2.contains(&(field_values[0])))
+//                     .add(Column::V3.contains(&(field_values[1])))
+//                     .add(Column::V4.contains(&(field_values[2])))
+//                     .add(Column::V5.contains(&(field_values[3]))),
+//             )
+//             .exec(conn)
+//             .await
+//             .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//     } else if field_index == 1 {
+//         Entity::delete_many()
+//             .filter(
+//                 Condition::all()
+//                     .add(Column::Ptype.eq(pt))
+//                     .add(Column::V1.contains(&(field_values[0])))
+//                     .add(Column::V2.contains(&(field_values[1])))
+//                     .add(Column::V3.contains(&(field_values[2])))
+//                     .add(Column::V4.contains(&(field_values[3])))
+//                     .add(Column::V5.contains(&(field_values[4]))),
+//             )
+//             .exec(conn)
+//             .await
+//             .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//     } else {
+//         Entity::delete_many()
+//             .filter(
+//                 Condition::all()
+//                     .add(Column::Ptype.eq(pt))
+//                     .add(Column::V0.contains(&(field_values[0])))
+//                     .add(Column::V1.contains(&(field_values[1])))
+//                     .add(Column::V2.contains(&(field_values[2])))
+//                     .add(Column::V3.contains(&(field_values[3])))
+//                     .add(Column::V4.contains(&(field_values[4])))
+//                     .add(Column::V5.contains(&(field_values[5]))),
+//             )
+//             .exec(conn)
+//             .await
+//             .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
+//     };
+//     Ok(true)
+// }
 
 //  加载策略
 pub async fn load_policy(conn: &DatabaseConnection) -> Result<Vec<Model>> {
@@ -363,22 +585,22 @@ pub(crate) async fn load_filtered_policy<'a>(
                 .add(
                     Condition::all()
                         .add(Column::Ptype.like("p%"))
-                        .add(Column::V0.like(g_filter[0]))
-                        .add(Column::V1.like(g_filter[1]))
-                        .add(Column::V2.like(g_filter[2]))
-                        .add(Column::V3.like(g_filter[3]))
-                        .add(Column::V4.like(g_filter[4]))
-                        .add(Column::V5.like(g_filter[5])),
+                        .add(Column::V0.contains(g_filter[0]))
+                        .add(Column::V1.contains(g_filter[1]))
+                        .add(Column::V2.contains(g_filter[2]))
+                        .add(Column::V3.contains(g_filter[3]))
+                        .add(Column::V4.contains(g_filter[4]))
+                        .add(Column::V5.contains(g_filter[5])),
                 )
                 .add(
                     Condition::all()
                         .add(Column::Ptype.like("g%"))
-                        .add(Column::V0.like(p_filter[0]))
-                        .add(Column::V1.like(p_filter[1]))
-                        .add(Column::V2.like(p_filter[2]))
-                        .add(Column::V3.like(p_filter[3]))
-                        .add(Column::V4.like(p_filter[4]))
-                        .add(Column::V5.like(p_filter[5])),
+                        .add(Column::V0.contains(p_filter[0]))
+                        .add(Column::V1.contains(p_filter[1]))
+                        .add(Column::V2.contains(p_filter[2]))
+                        .add(Column::V3.contains(p_filter[3]))
+                        .add(Column::V4.contains(p_filter[4]))
+                        .add(Column::V5.contains(p_filter[5])),
                 ),
         )
         .all(conn)

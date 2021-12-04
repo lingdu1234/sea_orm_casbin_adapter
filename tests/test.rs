@@ -213,6 +213,13 @@ mod test {
         e.enable_log(true);
         e.enforce(("am", "ad", "rw")).unwrap();
         e.enforce(("am", "ad", "cd")).unwrap();
+        e.load_policy().await.unwrap();
+        e.load_filtered_policy(Filter {
+            p: vec!["bm", "bd"],
+            g: vec!["dm", "dd"],
+        })
+        .await
+        .unwrap();
         Ok(())
     }
 }

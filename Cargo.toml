@@ -1,6 +1,6 @@
 [package]
 authors = ["lingdu <waong2005@126.com>"]
-categories = ["database"]
+categories = ["database interface"]
 description = "❤ casbin adapter for rust with sea_orm"
 documentation = "https://docs.rs/sea_orm_casbin_adapter"
 edition = "2021"
@@ -10,7 +10,7 @@ license = "MIT"
 name = "sea_orm_casbin_adapter"
 readme = "README.md"
 repository = "https://github.com/lingdu1234/sea_orm_casbin_adapter.git"
-version = "0.2.0"
+version = "0.2.1"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
