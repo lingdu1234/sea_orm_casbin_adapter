@@ -83,10 +83,7 @@ pub async fn remove_filtered_policy(
     field_index: usize,
     field_values: Vec<String>,
 ) -> Result<bool> {
-    println!("{}", field_index);
-
     let field_values_x = normalize_casbin_rule(field_values, field_index);
-    println!("field_values_x---{:#?}", field_values_x);
     let mut d = Entity::delete_many().filter(Column::Ptype.eq(pt));
     if field_index == 5 {
         if !field_values_x[0].is_empty() {
