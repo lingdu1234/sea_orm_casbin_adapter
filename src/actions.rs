@@ -2,9 +2,10 @@ use super::models::{ActiveModel, Column, Entity, Model, NewCasbinRule};
 use super::Error;
 use casbin::{error::AdapterError, Error as CasbinError, Filter, Result};
 use sea_orm::sea_query::{self, ColumnDef, Condition};
+use sea_orm::ActiveValue::NotSet;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, ConnectionTrait, DatabaseConnection, EntityTrait, ExecResult,
-    QueryFilter, Set, Unset,
+    QueryFilter, Set,
 };
 pub async fn new(conn: &DatabaseConnection) -> Result<ExecResult> {
     let stmt = sea_query::Table::create()
@@ -237,7 +238,7 @@ pub async fn save_policy(conn: &DatabaseConnection, rules: Vec<NewCasbinRule<'_>
 
         // let uid = scru128::scru128();
         let p = ActiveModel {
-            id: Unset(None),
+            id: NotSet,
             ptype: Set(rule.ptype.to_string()),
             v0: Set(rule.v0.to_string()),
             v1: Set(rule.v1.unwrap_or("").to_string()),
@@ -283,7 +284,7 @@ pub(crate) async fn add_policy(conn: &DatabaseConnection, rule: NewCasbinRule<'_
     }
     // let uid = scru128::scru128();
     let p = ActiveModel {
-        id: Unset(None),
+        id: NotSet,
         ptype: Set(rule.ptype.to_string()),
         v0: Set(rule.v0.to_string()),
         v1: Set(v1.to_string()),
@@ -332,7 +333,7 @@ pub(crate) async fn add_policies(
         }
         // let uid = scru128::scru128();
         let p = ActiveModel {
-            id: Unset(None),
+            id: NotSet,
             ptype: Set(rule.ptype.to_string()),
             v0: Set(rule.v0.to_string()),
             v1: Set(v1.to_string()),

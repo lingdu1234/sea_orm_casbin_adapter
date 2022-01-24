@@ -222,4 +222,20 @@ mod test {
         .unwrap();
         Ok(())
     }
+
+    /// step 10
+    /// remove_filtered_named_policy
+    #[tokio::test]
+    async fn get_filtered_named_policy() -> Result<()> {
+        let m = DefaultModel::from_file("config/casbin_conf/rbac_model.conf")
+            .await
+            .unwrap();
+        let adpt = SeaOrmAdapter::new(DB_LINK).await.expect("open db error");
+
+        let mut e = Enforcer::new(m, adpt).await?;
+        e.enable_log(true);
+        let aaa = e.get_filtered_grouping_policy(0, vec!["dm".to_string()]);
+        println!("----------------------->{:?}", aaa);
+        Ok(())
+    }
 }
