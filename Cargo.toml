@@ -21,7 +21,7 @@ tokio = {version = "1.14.0", features = ["fs", "io-util", "rt-multi-thread", "ma
 [dependencies.sea-orm]
 default-features = false
 features = ["macros", "runtime-tokio-native-tls"]
-version = "0.5.0"
+version = "0.6.0"
 
 [features]
 default = ["mysql", "postgres", "sqlite"]

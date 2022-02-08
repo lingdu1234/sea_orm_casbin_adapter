@@ -12,7 +12,7 @@ pub struct SeaOrmAdapter {
 }
 
 impl<'a> SeaOrmAdapter {
-    pub async fn new<U: Into<String>>(url: U) -> Result<Self> {
+    pub async fn new<U: Into<String>>(url: U, is_init: bool) -> Result<Self> {
         let mut opt = ConnectOptions::new(url.into());
         opt.max_connections(100)
             .min_connections(5)
@@ -21,14 +21,16 @@ impl<'a> SeaOrmAdapter {
         let pool = Database::connect(opt)
             .await
             .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))?;
-        adapter::new(&pool).await.map(|_| Self {
+        adapter::new(&pool, is_init).await;
+        Ok(Self {
             pool,
             is_filtered: false,
         })
     }
 
-    pub async fn new_with_pool(pool: DatabaseConnection) -> Result<Self> {
-        adapter::new(&pool).await.map(|_| Self {
+    pub async fn new_with_pool(pool: DatabaseConnection, is_init: bool) -> Result<Self> {
+        adapter::new(&pool, is_init).await;
+        Ok(Self {
             pool,
             is_filtered: false,
         })

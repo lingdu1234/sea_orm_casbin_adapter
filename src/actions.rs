@@ -4,34 +4,40 @@ use casbin::{error::AdapterError, Error as CasbinError, Filter, Result};
 use sea_orm::sea_query::{self, ColumnDef, Condition};
 use sea_orm::ActiveValue::NotSet;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, ConnectionTrait, DatabaseConnection, EntityTrait, ExecResult,
-    QueryFilter, Set,
+    ActiveModelTrait, ColumnTrait, ConnectionTrait, DatabaseConnection, EntityTrait, QueryFilter,
+    Set, TransactionTrait,
 };
-pub async fn new(conn: &DatabaseConnection) -> Result<ExecResult> {
-    let stmt = sea_query::Table::create()
-        .table(Entity)
-        .if_not_exists()
-        .col(
-            ColumnDef::new(Column::Id)
-                .integer()
-                .not_null()
-                .primary_key()
-                .auto_increment(),
-        )
-        .col(ColumnDef::new(Column::Ptype).string())
-        .col(ColumnDef::new(Column::V0).string())
-        .col(ColumnDef::new(Column::V1).string())
-        .col(ColumnDef::new(Column::V2).string())
-        .col(ColumnDef::new(Column::V3).string())
-        .col(ColumnDef::new(Column::V4).string())
-        .col(ColumnDef::new(Column::V5).string())
-        .to_owned();
-    // 创建表格
-    let builder = conn.get_database_backend();
-    conn.execute(builder.build(&stmt))
-        .await
-        .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))
-    // create_table(conn, &stmt).await?;
+pub async fn new(conn: &DatabaseConnection, is_init: bool) -> bool {
+    match is_init {
+        true => {
+            let stmt = sea_query::Table::create()
+                .table(Entity)
+                .if_not_exists()
+                .col(
+                    ColumnDef::new(Column::Id)
+                        .integer()
+                        .not_null()
+                        .primary_key()
+                        .auto_increment(),
+                )
+                .col(ColumnDef::new(Column::Ptype).string())
+                .col(ColumnDef::new(Column::V0).string())
+                .col(ColumnDef::new(Column::V1).string())
+                .col(ColumnDef::new(Column::V2).string())
+                .col(ColumnDef::new(Column::V3).string())
+                .col(ColumnDef::new(Column::V4).string())
+                .col(ColumnDef::new(Column::V5).string())
+                .to_owned();
+            // 创建表格
+            let builder = conn.get_database_backend();
+            conn.execute(builder.build(&stmt))
+                .await
+                .map_err(|err| CasbinError::from(AdapterError(Box::new(Error::DbErr(err)))))
+                .expect("casbin table create failed");
+            true
+        }
+        false => true,
+    }
 }
 
 ///  删除策略
