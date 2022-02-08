@@ -10,13 +10,14 @@ license = "MIT"
 name = "sea_orm_casbin_adapter"
 readme = "README.md"
 repository = "https://github.com/lingdu1234/sea_orm_casbin_adapter.git"
-version = "0.2.4"
+version = "0.2.5"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-async-trait = "0.1.51"
+async-trait = "0.1.52"
 casbin = {version = "2.0.9", default-features = false, features = ["runtime-async-std", "logging", "incremental"]}
-tokio = {version = "1.14.0", features = ["fs", "io-util", "rt-multi-thread", "macros"]}
+[dev-dependencies]
+tokio = {version = "1.16.1", features = ["fs", "io-util", "rt-multi-thread", "macros"]}
 
 [dependencies.sea-orm]
 default-features = false

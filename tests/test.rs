@@ -5,7 +5,7 @@ mod test {
     ///  step 0
 
     const DB_LINK: &str = "mysql://root:lingdu515639@127.0.0.1:13306/wk";
-    // const DB_LINK: &str = "postgres://postgres:lingdu515639@127.0.0.1:25432/wk";
+    // const DB_LINK,true: &str = "postgres://postgres:lingdu515639@127.0.0.1:25432/wk";
 
     /// step 1
     ///
@@ -14,7 +14,9 @@ mod test {
         let m = DefaultModel::from_file("config/casbin_conf/rbac_model.conf")
             .await
             .unwrap();
-        let adpt = SeaOrmAdapter::new(DB_LINK).await.expect("open db error");
+        let adpt = SeaOrmAdapter::new(DB_LINK, true)
+            .await
+            .expect("open db error");
 
         let mut e = Enforcer::new(m, adpt).await?;
         e.enable_log(true);
@@ -33,7 +35,9 @@ mod test {
         let m = DefaultModel::from_file("config/casbin_conf/rbac_model.conf")
             .await
             .unwrap();
-        let adpt = SeaOrmAdapter::new(DB_LINK).await.expect("open db error");
+        let adpt = SeaOrmAdapter::new(DB_LINK, true)
+            .await
+            .expect("open db error");
 
         let mut e = Enforcer::new(m, adpt).await?;
         e.enable_log(true);
@@ -53,7 +57,9 @@ mod test {
         let m = DefaultModel::from_file("config/casbin_conf/rbac_model.conf")
             .await
             .unwrap();
-        let adpt = SeaOrmAdapter::new(DB_LINK).await.expect("open db error");
+        let adpt = SeaOrmAdapter::new(DB_LINK, true)
+            .await
+            .expect("open db error");
 
         let mut e = Enforcer::new(m, adpt).await?;
         e.enable_log(true);
@@ -70,7 +76,9 @@ mod test {
         let m = DefaultModel::from_file("config/casbin_conf/rbac_model.conf")
             .await
             .unwrap();
-        let adpt = SeaOrmAdapter::new(DB_LINK).await.expect("open db error");
+        let adpt = SeaOrmAdapter::new(DB_LINK, true)
+            .await
+            .expect("open db error");
 
         let mut e = Enforcer::new(m, adpt).await?;
         e.enable_log(true);
@@ -93,7 +101,9 @@ mod test {
         let m = DefaultModel::from_file("config/casbin_conf/rbac_model.conf")
             .await
             .unwrap();
-        let adpt = SeaOrmAdapter::new(DB_LINK).await.expect("open db error");
+        let adpt = SeaOrmAdapter::new(DB_LINK, true)
+            .await
+            .expect("open db error");
 
         let mut e = Enforcer::new(m, adpt).await?;
         e.enable_log(true);
@@ -110,7 +120,9 @@ mod test {
         let m = DefaultModel::from_file("config/casbin_conf/rbac_model.conf")
             .await
             .unwrap();
-        let adpt = SeaOrmAdapter::new(DB_LINK).await.expect("open db error");
+        let adpt = SeaOrmAdapter::new(DB_LINK, true)
+            .await
+            .expect("open db error");
 
         let mut e = Enforcer::new(m, adpt).await?;
         e.enable_log(true);
@@ -130,7 +142,9 @@ mod test {
         let m = DefaultModel::from_file("config/casbin_conf/rbac_model.conf")
             .await
             .unwrap();
-        let adpt = SeaOrmAdapter::new(DB_LINK).await.expect("open db error");
+        let adpt = SeaOrmAdapter::new(DB_LINK, true)
+            .await
+            .expect("open db error");
 
         let mut e = Enforcer::new(m, adpt).await?;
         e.enable_log(true);
@@ -147,7 +161,9 @@ mod test {
         let m = DefaultModel::from_file("config/casbin_conf/rbac_model.conf")
             .await
             .unwrap();
-        let adpt = SeaOrmAdapter::new(DB_LINK).await.expect("open db error");
+        let adpt = SeaOrmAdapter::new(DB_LINK, true)
+            .await
+            .expect("open db error");
 
         let mut e = Enforcer::new(m, adpt).await?;
         e.enable_log(true);
@@ -170,7 +186,9 @@ mod test {
         let m = DefaultModel::from_file("config/casbin_conf/rbac_model.conf")
             .await
             .unwrap();
-        let adpt = SeaOrmAdapter::new(DB_LINK).await.expect("open db error");
+        let adpt = SeaOrmAdapter::new(DB_LINK, true)
+            .await
+            .expect("open db error");
 
         let mut e = Enforcer::new(m, adpt).await?;
         e.enable_log(true);
@@ -187,7 +205,9 @@ mod test {
         let m = DefaultModel::from_file("config/casbin_conf/rbac_model.conf")
             .await
             .unwrap();
-        let adpt = SeaOrmAdapter::new(DB_LINK).await.expect("open db error");
+        let adpt = SeaOrmAdapter::new(DB_LINK, true)
+            .await
+            .expect("open db error");
 
         let mut e = Enforcer::new(m, adpt).await?;
         e.enable_log(true);
@@ -207,7 +227,9 @@ mod test {
         let m = DefaultModel::from_file("config/casbin_conf/rbac_model.conf")
             .await
             .unwrap();
-        let adpt = SeaOrmAdapter::new(DB_LINK).await.expect("open db error");
+        let adpt = SeaOrmAdapter::new(DB_LINK, true)
+            .await
+            .expect("open db error");
 
         let mut e = Enforcer::new(m, adpt).await?;
         e.enable_log(true);
@@ -230,7 +252,9 @@ mod test {
         let m = DefaultModel::from_file("config/casbin_conf/rbac_model.conf")
             .await
             .unwrap();
-        let adpt = SeaOrmAdapter::new(DB_LINK).await.expect("open db error");
+        let adpt = SeaOrmAdapter::new(DB_LINK, true)
+            .await
+            .expect("open db error");
 
         let mut e = Enforcer::new(m, adpt).await?;
         e.enable_log(true);
