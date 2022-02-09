@@ -18,13 +18,13 @@ async-trait = "0.1.52"
 # casbin = {version = "2.0.9", default-features = false, features = ["runtime-async-std", "logging", "incremental"]}
 casbin = {version = "2.0.9", default-features = false, features = ["incremental"]}
 # option
+actix-rt = {version = "2.6.0", default-features = false, optional = true}
 async-std = {version = "1.10.0", optional = true}
 slog = {version = "2.7.0", optional = true}
 slog-async = {version = "2.7.0", optional = true}
 slog-term = {version = "2.8.0", optional = true}
-# sqlx = {version = "^0.5", optional = true}
+sqlx = {version = "^0.5", optional = true}
 tokio = {version = "1.16.1", optional = true, default-features = false}
-# tokio-stream = {version = "0.1", optional = true, default-features = false}
 [dev-dependencies]
 tokio = {version = "1.16.1", features = ["full"]}
 
@@ -39,18 +39,21 @@ default = []
 mysql = ["sea-orm/sqlx-mysql"]
 postgres = ["sea-orm/sqlx-postgres"]
 sqlite = ["sea-orm/sqlx-sqlite"]
-# sea-orm-runtime
-# runtime-actix-native-tls = ["sqlx/runtime-actix-native-tls"]
-# runtime-actix-rustls = ["sqlx/runtime-actix-rustls"]
-# runtime-async-std-native-tls = ["sqlx/runtime-async-std-native-tls"]
-# runtime-async-std-rustls = ["sqlx/runtime-async-std-rustls"]
-# runtime-tokio-native-tls = ["sqlx/runtime-tokio-native-tls"]
-# runtime-tokio-rustls = ["sqlx/runtime-tokio-rustls"]
 
 # casbin
 casbin-async-std = ["async-std"]
 casbin-logging = ["slog", "slog-term", "slog-async"]
 casbin-tokio = ["tokio/fs", "tokio/io-util"]
+# async runtime
+# async-std
+runtime-async-std-native-tls = ["casbin/runtime-async-std", "sqlx/runtime-async-std-native-tls"]
+runtime-async-std-rustls = ["casbin/runtime-async-std", "sqlx/runtime-async-std-rustls"]
+# tokio
+runtime-tokio-native-tls = ["casbin/runtime-tokio", "sqlx/runtime-tokio-native-tls"]
+runtime-tokio-rustls = ["casbin/runtime-tokio", "sqlx/runtime-tokio-rustls"]
+# actix (actually based on tokio)
+runtime-actix-native-tls = ["casbin/runtime-tokio", "sqlx/runtime-actix-native-tls"]
+runtime-actix-rustls = ["casbin/runtime-tokio", "sqlx/runtime-actix-rustls"]
 
 [profile.release]
 codegen-units = 1 
