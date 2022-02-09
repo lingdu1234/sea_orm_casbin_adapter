@@ -1655,7 +1655,7 @@ dependencies = [
 
 [[package]]
 name = "sea_orm_casbin_adapter"
-version = "0.2.5"
+version = "0.3.0"
 dependencies = [
  "actix-rt",
  "async-std",
