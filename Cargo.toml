@@ -11,6 +11,8 @@ name = "sea_orm_casbin_adapter"
 readme = "README.md"
 repository = "https://github.com/lingdu1234/sea_orm_casbin_adapter.git"
 version = "0.3.0"
+[package.metadata.docs.rs]
+features = ["mysql", "runtime-tokio-rustls"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
