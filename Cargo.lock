@@ -1658,7 +1658,6 @@ name = "sea_orm_casbin_adapter"
 version = "0.3.0"
 dependencies = [
  "actix-rt",
- "async-std",
  "async-trait",
  "casbin",
  "sea-orm",
