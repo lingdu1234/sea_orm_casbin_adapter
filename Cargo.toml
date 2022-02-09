@@ -18,7 +18,7 @@ async-trait = "0.1.52"
 casbin = {version = "2.0.9", default-features = false, features = ["logging"]}
 # option
 actix-rt = {version = "2.6.0", default-features = false, optional = true}
-# async-std = {version = "1.10.0", optional = true}
+async-std = {version = "1.10.0", optional = true}
 sqlx = {version = "^0.5", optional = true}
 tokio = {version = "1.16.1", optional = true, default-features = false}
 [dev-dependencies]
@@ -30,15 +30,19 @@ features = ["macros"]
 version = "0.6.0"
 
 [features]
-default = ["runtime-tokio-native-tls"]
+default = ["runtime-tokio", "runtime-tokio-rustls"]
 # sea-orm
 mysql = ["sea-orm/sqlx-mysql"]
 postgres = ["sea-orm/sqlx-postgres"]
 sqlite = ["sea-orm/sqlx-sqlite"]
 
+# casbin
+casbin_runtime = []
+runtime-async-std = ["async-std"]
+runtime-tokio = ["tokio/fs", "tokio/io-util"]
 # async runtime
-sync_runtime = []
 # async-std
+async_runtime = []
 runtime-async-std-native-tls = ["casbin/runtime-async-std", "sqlx/runtime-async-std-native-tls"]
 runtime-async-std-rustls = ["casbin/runtime-async-std", "sqlx/runtime-async-std-rustls"]
 # tokio
