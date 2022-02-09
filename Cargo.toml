@@ -30,7 +30,7 @@ features = ["macros"]
 version = "0.6.0"
 
 [features]
-default = []
+default = ["async-std"]
 # sea-orm
 mysql = ["sea-orm/sqlx-mysql"]
 postgres = ["sea-orm/sqlx-postgres"]
