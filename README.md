@@ -1,5 +1,34 @@
 # sea orm casbin adapter
 
+## update
+    1. the version 3.0 is enabled only `logging` freatrue .
+    2. you can use any run_time to run the adapter. but same with the sea-orm's run_time.
+    3. because it set no default runtime,the docs is builded failed
+```toml
+[dependencies]
+sea_orm_casbin_adapter = {version = "0.3", features = ["mysql", "runtime-tokio-native-tls"]}
+sea-orm = {version = "0.6.0", default-features = false, features = ["sqlx-mysql", "macros", "runtime-tokio-native-tls"]}
+```
+
+or
+
+```toml
+[dependencies]
+sea_orm_casbin_adapter = {version = "0.3", features = ["mysql", "runtime-tokio-native-tls"]}
+
+[dependencies.sea-orm]
+default-features = false
+features = ["macros", "runtime-tokio-native-tls"]
+version = "0.6.0"
+
+[features]
+default = ["postgres", "mysql"]
+mysql = ["sea-orm/sqlx-mysql"]
+postgres = ["sea-orm/sqlx-postgres"]
+sqlite = ["sea-orm/sqlx-sqlite"]
+```
+
+
 ## Introduction
 > sea-orm-casbin-adapter is a casbin adapter for sea-orm.  
 > just like sqx-adapter, it can be used in sea-orm.
