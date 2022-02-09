@@ -41,9 +41,9 @@ postgres = ["sea-orm/sqlx-postgres"]
 sqlite = ["sea-orm/sqlx-sqlite"]
 
 # casbin
-casbin-async-std = ["async-std"]
-casbin-logging = ["slog", "slog-term", "slog-async"]
-casbin-tokio = ["tokio/fs", "tokio/io-util"]
+logging = ["slog", "slog-term", "slog-async"]
+runtime-async-std = ["async-std"]
+runtime-tokio = ["tokio/fs", "tokio/io-util"]
 # async runtime
 # async-std
 runtime-async-std-native-tls = ["casbin/runtime-async-std", "sqlx/runtime-async-std-native-tls"]
