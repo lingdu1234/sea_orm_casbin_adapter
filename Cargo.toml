@@ -10,7 +10,7 @@ license = "MIT"
 name = "sea_orm_casbin_adapter"
 readme = "README.md"
 repository = "https://github.com/lingdu1234/sea_orm_casbin_adapter.git"
-version = "0.3.1"
+version = "0.3.2"
 [package.metadata.docs.rs]
 features = ["mysql", "runtime-tokio-rustls"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -20,16 +20,16 @@ async-trait = "0.1.52"
 casbin = {version = "2.0.9", default-features = false, features = ["logging"]}
 # option
 actix-rt = {version = "2.6.0", default-features = false, optional = true}
-# async-std = {version = "1.10.0", optional = true}
+async-std = {version = "1.11.0", optional = true}
 sqlx = {version = "^0.5", optional = true}
-tokio = {version = "1.16.1", optional = true, default-features = false}
+tokio = {version = "1.17.0", optional = true, default-features = false}
 [dev-dependencies]
-tokio = {version = "1.16.1", features = ["full"]}
+tokio = {version = "1.17.0", features = ["full"]}
 
 [dependencies.sea-orm]
 default-features = false
 features = ["macros"]
-version = "0.6.0"
+version = "0.7.1"
 
 [features]
 default = []

@@ -27,7 +27,6 @@ postgres = ["sea-orm/sqlx-postgres"]
 sqlite = ["sea-orm/sqlx-sqlite"]
 ```
 
-## the usage case:  [poem-admin](https://github.com/lingdu1234/poem_admin)
 
 ## Introduction
 > sea-orm-casbin-adapter is a casbin adapter for sea-orm.  
