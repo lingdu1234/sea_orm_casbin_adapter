@@ -33,6 +33,7 @@ version = "0.7.1"
 
 [features]
 default = []
+# default = ["mysql", "runtime-tokio-rustls"]
 # sea-orm
 mysql = ["sea-orm/sqlx-mysql"]
 postgres = ["sea-orm/sqlx-postgres"]
@@ -59,4 +60,6 @@ codegen-units = 1
 debug = false 
 lto = true 
 opt-level = "z" # Optimize for size.
-panic = 'abort'
+panic = 'abort' 
+
+# cargo build --features mysql,runtime-tokio-rustls
